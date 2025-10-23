@@ -2,8 +2,7 @@ import streamlit as st
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import UnstructuredFileLoader
 from langchain.embeddings import CacheBackedEmbeddings, OpenAIEmbeddings
-from langchain.memory import ConversationBufferMemory
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.prompts import ChatPromptTemplate
 from langchain.storage import LocalFileStore
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
@@ -53,7 +52,7 @@ def paint_history():
 
 # file 처리
 @st.cache_resource(show_spinner="Embedding file...")
-def embed_file(file):
+def embed_file(file, key):
 	file_content = file.read()
 	file_path = f"/tmp/{file.name}"
 	with open(file_path, "wb") as f:
@@ -67,7 +66,9 @@ def embed_file(file):
 	)
 	loader = UnstructuredFileLoader(file_path)
 	docs = loader.load_and_split(text_splitter=splitter)
-	embeddings = OpenAIEmbeddings()
+	embeddings = OpenAIEmbeddings(
+		openai_api_key=key
+	)
 	cached_embeddings = CacheBackedEmbeddings.from_bytes_store(embeddings, cache_dir)
 	vectorstore = FAISS.from_documents(docs, cached_embeddings)
 	retriever = vectorstore.as_retriever()
@@ -130,8 +131,7 @@ with st.sidebar:
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import UnstructuredFileLoader
 from langchain.embeddings import CacheBackedEmbeddings, OpenAIEmbeddings
-from langchain.memory import ConversationBufferMemory
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.prompts import ChatPromptTemplate
 from langchain.storage import LocalFileStore
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
@@ -181,7 +181,7 @@ def paint_history():
 
 # file 처리
 @st.cache_resource(show_spinner="Embedding file...")
-def embed_file(file):
+def embed_file(file, key):
 	file_content = file.read()
 	file_path = f"/tmp/{file.name}"
 	with open(file_path, "wb") as f:
@@ -195,7 +195,9 @@ def embed_file(file):
 	)
 	loader = UnstructuredFileLoader(file_path)
 	docs = loader.load_and_split(text_splitter=splitter)
-	embeddings = OpenAIEmbeddings()
+	embeddings = OpenAIEmbeddings(
+		openai_api_key=key
+	)
 	cached_embeddings = CacheBackedEmbeddings.from_bytes_store(embeddings, cache_dir)
 	vectorstore = FAISS.from_documents(docs, cached_embeddings)
 	retriever = vectorstore.as_retriever()
@@ -218,15 +220,16 @@ prompt = ChatPromptTemplate.from_messages([
 	("human", "{question}"),
 ])
 
+
 # UI
 st.title("FullstackGPT - Assignment #5")
 st.markdown(
 	'''
-	환영합니다!
+		환영합니다!
 
-	이 챗봇에게 파일 내용에 대해서 질문하세요.
+		이 챗봇에게 파일 내용에 대해서 질문하세요.
 
-	사이드바에서 OpenAI API key 를 입력하고, 파일을 업로드 하면 질문을 할 수 있습니다.
+		사이드바에서 OpenAI API key 를 입력하고, 파일을 업로드 하면 질문을 할 수 있습니다.
 	'''
 )
 
@@ -253,13 +256,13 @@ with st.sidebar:
 		)
 	
 	st.text("code")
-	code_to_display = '''
-	# same code
-	'''
+	code_to_display = """
+	# code
+	"""
 	st.code(code_to_display)
 
 if file and key:
-	retriever = embed_file(file)
+	retriever = embed_file(file, key)
 
 	send_message("준비되었습니다! 질문이 있으신가요?", "ai", save=False)
 	paint_history()
@@ -282,7 +285,7 @@ else:
 	st.code(code_to_display)
 
 if file and key:
-	retriever = embed_file(file)
+	retriever = embed_file(file, key)
 
 	send_message("준비되었습니다! 질문이 있으신가요?", "ai", save=False)
 	paint_history()
