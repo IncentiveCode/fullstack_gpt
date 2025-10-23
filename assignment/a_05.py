@@ -55,14 +55,16 @@ def paint_history():
 @st.cache_resource(show_spinner="Embedding file...")
 def embed_file(file, key):
 	file_content = file.read()
-	dir_path = "./.local_cache/"
-	os.makedirs(dir_path, exist_ok=True)
-	file_path = f"./.local_cache/{file.name}"
+	file_dir = "./.local_cache/files"
+	os.makedirs(file_dir, exist_ok=True)
+	file_path = f"{file_dir}/{file.name}"
 
-	with open(file_path, "wb+") as f:
+	with open(file_path, "wb") as f:
 		f.write(file_content)
 
-	cache_dir = LocalFileStore(file_path)
+	cache_dir = "./.local_cache/embeddings"
+	os.makedirs(cache_dir, exist_ok=True)
+	cache_path = LocalFileStore(f"{cache_dir}/{file.name}")
 	splitter = CharacterTextSplitter.from_tiktoken_encoder(
 			separator="\n",
 			chunk_size=600,
@@ -73,7 +75,7 @@ def embed_file(file, key):
 	embeddings = OpenAIEmbeddings(
 		openai_api_key=key
 	)
-	cached_embeddings = CacheBackedEmbeddings.from_bytes_store(embeddings, cache_dir)
+	cached_embeddings = CacheBackedEmbeddings.from_bytes_store(embeddings, cache_path)
 	vectorstore = FAISS.from_documents(docs, cached_embeddings)
 	retriever = vectorstore.as_retriever()
 	return retriever
@@ -188,14 +190,16 @@ def paint_history():
 @st.cache_resource(show_spinner="Embedding file...")
 def embed_file(file, key):
 	file_content = file.read()
-	dir_path = "./.local_cache/"
-	os.makedirs(dir_path, exist_ok=True)
-	file_path = f"./.local_cache/{file.name}"
+	file_dir = "./.local_cache/files"
+	os.makedirs(file_dir, exist_ok=True)
+	file_path = f"{file_dir}/{file.name}"
 
-	with open(file_path, "wb+") as f:
+	with open(file_path, "wb") as f:
 		f.write(file_content)
 
-	cache_dir = LocalFileStore(file_path)
+	cache_dir = "./.local_cache/embeddings"
+	os.makedirs(cache_dir, exist_ok=True)
+	cache_path = LocalFileStore(f"{cache_dir}/{file.name}")
 	splitter = CharacterTextSplitter.from_tiktoken_encoder(
 			separator="\n",
 			chunk_size=600,
@@ -206,7 +210,7 @@ def embed_file(file, key):
 	embeddings = OpenAIEmbeddings(
 		openai_api_key=key
 	)
-	cached_embeddings = CacheBackedEmbeddings.from_bytes_store(embeddings, cache_dir)
+	cached_embeddings = CacheBackedEmbeddings.from_bytes_store(embeddings, cache_path)
 	vectorstore = FAISS.from_documents(docs, cached_embeddings)
 	retriever = vectorstore.as_retriever()
 	return retriever
