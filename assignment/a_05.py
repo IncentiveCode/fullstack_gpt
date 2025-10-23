@@ -59,7 +59,7 @@ def embed_file(file, key):
 	os.makedirs(dir_path, exist_ok=True)
 	file_path = f"./.local_cache/{file.name}"
 
-	with open(file_path, "wb") as f:
+	with open(file_path, "wb+") as f:
 		f.write(file_content)
 
 	cache_dir = LocalFileStore(file_path)
@@ -192,7 +192,7 @@ def embed_file(file, key):
 	os.makedirs(dir_path, exist_ok=True)
 	file_path = f"./.local_cache/{file.name}"
 
-	with open(file_path, "wb") as f:
+	with open(file_path, "wb+") as f:
 		f.write(file_content)
 
 	cache_dir = LocalFileStore(file_path)
