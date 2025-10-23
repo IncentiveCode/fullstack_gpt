@@ -55,8 +55,9 @@ def paint_history():
 @st.cache_resource(show_spinner="Embedding file...")
 def embed_file(file, key):
 	file_content = file.read()
+	dir_path = "./.cache/"
+	os.makedirs(dir_path, exist_ok=True)
 	file_path = f"./.cache/{file.name}"
-	os.makedirs(file_path, exist_ok=True)
 
 	with open(file_path, "wb") as f:
 		f.write(file_content)
@@ -187,8 +188,9 @@ def paint_history():
 @st.cache_resource(show_spinner="Embedding file...")
 def embed_file(file, key):
 	file_content = file.read()
+	dir_path = "./.cache/"
+	os.makedirs(dir_path, exist_ok=True)
 	file_path = f"./.cache/{file.name}"
-	os.makedirs(file_path, exist_ok=True)
 
 	with open(file_path, "wb") as f:
 		f.write(file_content)
