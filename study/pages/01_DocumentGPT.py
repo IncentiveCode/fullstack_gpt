@@ -1,6 +1,3 @@
-import time
-from uuid import UUID
-from langchain.schema.output import ChatGenerationChunk, GenerationChunk
 import streamlit as st
 from langchain.prompts import ChatPromptTemplate
 from langchain.document_loaders import UnstructuredFileLoader
@@ -12,15 +9,19 @@ from langchain.schema.runnable import RunnableLambda, RunnablePassthrough
 from langchain.chat_models import ChatOpenAI
 from langchain.callbacks.base import BaseCallbackHandler
 
+# meta tag 적용
 st.set_page_config(
 	page_title="DocumentGPT",
-	page_icon="🔥",
+	page_icon="👩‍💻",
 )
 
+
+# 간단한 저장공간 초기화
 if "messages" not in st.session_state:
 	st.session_state["messages"] = []
 
 
+# callback class
 class ChatCallbackHandler(BaseCallbackHandler):
 
 	def __init__(self):
@@ -37,6 +38,7 @@ class ChatCallbackHandler(BaseCallbackHandler):
 		save_message(self.message, "ai")
 	
 
+# model setting
 llm = ChatOpenAI(
 	temperature=0.1,
 	streaming=True,
@@ -46,6 +48,7 @@ llm = ChatOpenAI(
 )
 
 
+# file 처리
 @st.cache_resource(show_spinner="Embedding file...")
 def embed_file(file):
 	# st.write(file)
@@ -70,9 +73,9 @@ def embed_file(file):
 	return retriever
 
 
+# session 에 저장 및 히스토리 출력
 def save_message(message, role):
 	st.session_state["messages"].append({"message": message, "role": role})
-
 
 def send_message(message, role, save=True):
 	with st.chat_message(role):
@@ -80,16 +83,17 @@ def send_message(message, role, save=True):
 	if save:
 		save_message(message, role)
 
-
 def paint_history():
 	for message in st.session_state["messages"]:
 		send_message(message["message"], message["role"], save=False)
 
 
+# document 를 하나의 string 으로 정리
 def format_docs(docs):
 	return "\n\n".join(document.page_content for document in docs)
 
 
+# prompt
 prompt = ChatPromptTemplate.from_messages([
 	("system", 
 		"""
@@ -102,14 +106,16 @@ prompt = ChatPromptTemplate.from_messages([
 	("human", "{question}"),
 ])
 
+
+# UI
 st.title("DocumentGPT")
 st.markdown(
 	"""
 		Welcome!
 
-		Use this chatbot to ask questions to an AI about your files!
+		Use this chatbot to ask questions to an AI about your file!
 
-		Upload your files on the sidebar.
+		Upload your file on the sidebar.
 	"""
 )
 
