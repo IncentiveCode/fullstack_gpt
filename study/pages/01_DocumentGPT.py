@@ -1,5 +1,6 @@
 import streamlit as st
-from langchain.prompts import ChatPromptTemplate
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.memory import ConversationSummaryBufferMemory
 from langchain.document_loaders import UnstructuredFileLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.storage import LocalFileStore
@@ -48,6 +49,19 @@ llm = ChatOpenAI(
 )
 
 
+# memory 초기화
+if "memory" not in st.session_state:
+	st.session_state["memory"] = ConversationSummaryBufferMemory(
+		llm=llm,
+		max_token_limit=100,
+		return_messages=True,
+	)
+memory = st.session_state["memory"]
+
+def get_memory(_):
+	return memory.load_memory_variables({})['history']
+
+
 # file 처리
 @st.cache_resource(show_spinner="Embedding file...")
 def embed_file(file):
@@ -73,7 +87,7 @@ def embed_file(file):
 	return retriever
 
 
-# session 에 저장 및 히스토리 출력
+# session 에 저장
 def save_message(message, role):
 	st.session_state["messages"].append({"message": message, "role": role})
 
@@ -83,6 +97,7 @@ def send_message(message, role, save=True):
 	if save:
 		save_message(message, role)
 
+# session 에 저장된 히스토리 출력
 def paint_history():
 	for message in st.session_state["messages"]:
 		send_message(message["message"], message["role"], save=False)
@@ -103,6 +118,7 @@ prompt = ChatPromptTemplate.from_messages([
 		Context: {context}
 		"""
 	),
+	MessagesPlaceholder(variable_name="history"),
 	("human", "{question}"),
 ])
 
@@ -118,6 +134,7 @@ st.markdown(
 		Upload your file on the sidebar.
 	"""
 )
+st.write(memory.load_memory_variables({}))
 
 with st.sidebar:
 	file = st.file_uploader(
@@ -142,13 +159,19 @@ if file:
 
 		chain = {
 			"context": retriever | RunnableLambda(format_docs),
+			"history": RunnableLambda(get_memory),
 			"question": RunnablePassthrough()
 		} | prompt | llm
 
 		# response = chain.invoke(message)
 		# send_message(response.content, "ai")
 		with st.chat_message("ai"):
-			chain.invoke(message)
+			response = chain.invoke(message)
+			memory.save_context(
+				{"input": message},
+				{"output": response.content}
+			)
 
 else:
 	st.session_state["messages"] = []
+	memory.clear()
