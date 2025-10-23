@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import UnstructuredFileLoader
 from langchain.embeddings import CacheBackedEmbeddings, OpenAIEmbeddings
@@ -54,8 +55,10 @@ def paint_history():
 @st.cache_resource(show_spinner="Embedding file...")
 def embed_file(file, key):
 	file_content = file.read()
-	file_path = f"./{file.name}"
-	with open(file_path, "wb+") as f:
+	file_path = f"./.cache/{file.name}"
+	os.makedirs(file_path, exist_ok=True)
+
+	with open(file_path, "wb") as f:
 		f.write(file_content)
 
 	cache_dir = LocalFileStore(file_path)
@@ -128,6 +131,7 @@ with st.sidebar:
 	
 	st.text("code")
 	code_to_display = """import streamlit as st
+import os
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import UnstructuredFileLoader
 from langchain.embeddings import CacheBackedEmbeddings, OpenAIEmbeddings
@@ -183,8 +187,10 @@ def paint_history():
 @st.cache_resource(show_spinner="Embedding file...")
 def embed_file(file, key):
 	file_content = file.read()
-	file_path = f"./{file.name}"
-	with open(file_path, "wb+") as f:
+	file_path = f"./.cache/{file.name}"
+	os.makedirs(file_path, exist_ok=True)
+
+	with open(file_path, "wb") as f:
 		f.write(file_content)
 
 	cache_dir = LocalFileStore(file_path)
@@ -257,7 +263,7 @@ with st.sidebar:
 	
 	st.text("code")
 	code_to_display = \"""
-	# 코드
+		# code
 	\"""
 	st.code(code_to_display)
 
