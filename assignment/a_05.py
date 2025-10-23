@@ -55,7 +55,7 @@ def paint_history():
 def embed_file(file, key):
 	file_content = file.read()
 	file_path = f"./{file.name}"
-	with open(file_path, "wb") as f:
+	with open(file_path, "wb+") as f:
 		f.write(file_content)
 
 	cache_dir = LocalFileStore(file_path)
@@ -81,12 +81,12 @@ def format_docs(docs):
 # prompt
 prompt = ChatPromptTemplate.from_messages([
 	("system", 
-		'''
+		"""
 		아래의 매우 긴 문서에서 질문에 대한 응답과 관련된 부분을 추출합니다.
 		만약 관련있는 문장이 없다면, '' 를 리턴하세요.
 
 		Context: {context}
-		'''
+		"""
 	),
 	("human", "{question}"),
 ])
@@ -95,13 +95,13 @@ prompt = ChatPromptTemplate.from_messages([
 # UI
 st.title("FullstackGPT - Assignment #5")
 st.markdown(
-	'''
+	"""
 		환영합니다!
 
 		이 챗봇에게 파일 내용에 대해서 질문하세요.
 
 		사이드바에서 OpenAI API key 를 입력하고, 파일을 업로드 하면 질문을 할 수 있습니다.
-	'''
+	"""
 )
 
 file = st.file_uploader(
@@ -184,7 +184,7 @@ def paint_history():
 def embed_file(file, key):
 	file_content = file.read()
 	file_path = f"./{file.name}"
-	with open(file_path, "wb") as f:
+	with open(file_path, "wb+") as f:
 		f.write(file_content)
 
 	cache_dir = LocalFileStore(file_path)
@@ -210,12 +210,12 @@ def format_docs(docs):
 # prompt
 prompt = ChatPromptTemplate.from_messages([
 	("system", 
-		'''
+		\"""
 		아래의 매우 긴 문서에서 질문에 대한 응답과 관련된 부분을 추출합니다.
 		만약 관련있는 문장이 없다면, '' 를 리턴하세요.
 
 		Context: {context}
-		'''
+		\"""
 	),
 	("human", "{question}"),
 ])
@@ -224,13 +224,13 @@ prompt = ChatPromptTemplate.from_messages([
 # UI
 st.title("FullstackGPT - Assignment #5")
 st.markdown(
-	'''
+	\"""
 		환영합니다!
 
 		이 챗봇에게 파일 내용에 대해서 질문하세요.
 
 		사이드바에서 OpenAI API key 를 입력하고, 파일을 업로드 하면 질문을 할 수 있습니다.
-	'''
+	\"""
 )
 
 file = st.file_uploader(
@@ -256,9 +256,9 @@ with st.sidebar:
 		)
 	
 	st.text("code")
-	code_to_display = """
-	#code
-	"""
+	code_to_display = \"""
+	# 코드
+	\"""
 	st.code(code_to_display)
 
 if file and key:
