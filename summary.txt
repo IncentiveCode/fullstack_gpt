@@ -1,0 +1,5 @@
+Python (programming language):
+Python is an interpreted, high-level, general-purpose programming language. Created by Guido van Rossum and first released in 1991, Python's design philosophy emphasizes code readability with its notable use of significant whitespace. Its language constructs and object-oriented approach aim to help programmers write clear, logical code for small and large-scale projects...
+
+Monty Python:
+Monty Python, the comedy troupe, refers to a group of six British comedians who created the television series Monty Python's Flying Circus, which first aired on the BBC in 1969. The group created and starred in four series and various films and stage shows. The group's style was characterized by surreal and absurd humor, which often satirized modern life and society. The influence of Monty Python on comedy and popular culture has been significant.
